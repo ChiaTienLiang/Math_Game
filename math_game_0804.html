@@ -133,18 +133,18 @@
             firstNum = document.getElementById("screen").value;
 
             if (total == 0) {
-                total += parseInt(firstNum);
+                total += Number(firstNum);
                 $("#screen").text(total);
             } else {
                 switch (op) {
                     case "+":
-                        total = total + parseInt(firstNum);
+                        total = total + Number(firstNum);
                         break;
                     case "–":
-                        total = total - parseInt(firstNum);
+                        total = total - Number(firstNum);
                         break;
                     case "×":
-                        total = total * parseInt(firstNum);
+                        total = total * Number(firstNum);
                         break;
                 }
             }
