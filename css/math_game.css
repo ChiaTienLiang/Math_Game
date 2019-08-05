@@ -8,25 +8,28 @@ td {
 
 table {
     width: 100%;
+    /* background-color: rgb(159, 163, 167); */
 }
 
-#screen {
+#screen,#answer,#equal {
     font-family: fantasy;
     color: salmon;
-    font-size: 40px;
+    font-size: 120px;
     width: 200px;
-    padding: 20px;
+    padding: 30px;
     letter-spacing: 3px;
+    text-align: center;
 }
 
-#answer {
+/* #answer {
     font-family: fantasy;
     color: salmon;
-    font-size: 60px;
-    width: 200px;
-    padding: 70px;
+    font-size: 120px;
+    width: 50%;
+    padding: 30px ;
     letter-spacing: 3px;
-}
+    text-align: center;
+} */
 
 #level {
     font-family: fantasy;
@@ -35,6 +38,8 @@ table {
     width: 200px;
     vertical-align: text-top;
     letter-spacing: 3px;
+    text-align: right;
+    padding: 0px 10%;
 }
 
 body {
@@ -72,8 +77,11 @@ body {
     font-size: 50px;
 }
 .restart{
-    margin: 10px 32%;
-    font-size: 22px;
+    margin: 10px;
+    font-size: 30px;
+}
+#re{
+    text-align: center;
 }
 
 #oper_row button,
