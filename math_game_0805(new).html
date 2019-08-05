@@ -7,84 +7,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
-
     <title>ThinKinG</title>
-
 </head>
 
 <body>
-
     <div class="wrap">
+        <!-- <h6 id="level">LEVEL:</h6> -->
         <table>
             <tr>
+                <td colspan="3" id="level">LEVEL:</td>
+            </tr>
+            <tr>
                 <td id="screen"></td>
-                <td id="answer">ANSWER:</td>
-                <td id="level">LEVEL:</td>
+                <td id="equal"></td>
+                <td id="answer"></td>
+                <!-- <td id="level">LEVEL:</td> -->
             </tr>
         </table>
         <table>
             <tr id="oper_row">
             </tr>
             <p>
-
             </p>
         </table>
         <div>
-            <span class="gamestart">START</span>
+            <button class="gamestart">START</button>
+            <button class="nextlevel">NEXT LEVEL</button>
         </div>
         <table>
             <tr id="num_row">
             </tr>
         </table>
     </div>
-    <div>
+    <div id="re">
         <button class="restart" id="restart" onclick="reset()">CLEAR</button>
     </div>
     <script>
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
         var bingoSound = new Audio("Soundeffect/coin05.mp3");
         var clearSound = new Audio("Soundeffect/powerdown07.mp3");
-
+        var mouseSound = new Audio("Soundeffect/mousein.mp3");
         var level = 1;
         var j = 0; //第一階段j=0，第二階段J=1以此類推，讓i+J增加一個數字跟符號
         var answer = 0;
         $("#level").text("LEVEL:" + level);
         //==================系統亂術產生數字及運算符號==================
 
-        //NOTE1:如何每過10關J就++
-        //NOTE2:按完數字時會鎖定數字方，讓玩家只能點選運算符號
         $(function () {
-            $('.gamestart').on('click', function () {
-                $(this).stop().hide();
+            $(".nextlevel").hide();
+            $(".gamestart").click(function () {
+                $(this).hide();
                 gameStart();
+            });
+        });
 
-            })
-        })
 
         function gameStart() {
-            
+            $("#equal").text("=");
+            $("#oper_row").css("pointer-events", "none");
+            $("#num_row").css("pointer-events", "auto");
+
             var ran_num = [];
             var oper = ["+", "–", "×"];
             var ran_oper = [];
+            var a = 0;
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
-                ran_num.sort(function (a, b) { //數字按大小排列
-                    return b - a
-                });
-            }
 
-            var a = 0;
-            for (var i = 0; i < ran_num.length; i++) { //檢查重複 
-                if (ran_num[i] == ran_num[i + 1]) {
-                    $("#num_row").append(
-                        `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
-                    );
-                    a++;
-                } else {
-                    $("#num_row").append(
-                        `<td><button class="num" id="num${ran_num[i]}" onclick="numClick('${ran_num[i]}')">${ran_num[i]}</button></td>`
-                    );
-                }
+                $("#num_row").append(
+                    `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
+                );
+                a++;
             }
 
             for (var i = 0; i < 2 + j; i++) { //亂數取運算符號
@@ -95,6 +88,10 @@
                 a++;
             }
 
+            shuffle(ran_num); //呼叫亂數排列的function
+            shuffle(ran_oper);
+            console.log(ran_num);
+            console.log(ran_oper);
             answer = ran_num[0];
             for (i = 0; i < ran_oper.length; i++) {
 
@@ -109,20 +106,30 @@
                         answer *= ran_num[i + 1];
                         break;
                 }
-
             }
-            // console.log(answer);
-            $("#answer").text(`ANSWER:${answer}`);
+            $("#answer").text(answer);
 
         }
-        // });
+
+        function shuffle(arr) { //亂數排列數字跟符號再去運算
+            var i, j, temp;
+            for (i = arr.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+            return arr;
+        };
+
         //=================下方計算玩家輸入=======================
         var total = 0;
         var temp = 0;
 
         function numClick(num) {
-            // $("#oper_row").show();
-            // $("#num_row").hide();
+            $("#num_row").css("pointer-events", "none");
+            $("#oper_row").css("pointer-events", "auto");
+
             btnSound.play();
             //.substr(0, 1)
             document.getElementById("screen").value = "";
@@ -137,22 +144,22 @@
             firstNum = document.getElementById("screen").value;
 
             if (total == 0) {
-                total += parseInt(firstNum);
+                total += Number(firstNum);
                 $("#screen").text(total);
             } else {
                 switch (op) {
                     case "+":
-                        total = total + parseInt(firstNum);
+                        total = total + Number(firstNum);
                         break;
                     case "–":
-                        total = total - parseInt(firstNum);
+                        total = total - Number(firstNum);
                         break;
                     case "×":
-                        total = total * parseInt(firstNum);
+                        total = total * Number(firstNum);
                         break;
                 }
-
             }
+
             $("#screen").text(total);
             if (total == answer) {
                 level++;
@@ -160,11 +167,12 @@
                 // message();
                 nextLev();
             }
-        }
+        };
 
         function opClick(str) {
-            // $("#oper_row").hide();
-            // $("#num_row").show();
+            $("#oper_row").css("pointer-events", " none");
+            $("#num_row").css("pointer-events", "auto");
+
             btnSound.play();
             op = str.substr(0, 1);
             var temp_oper = document.getElementById("oper" + str);
@@ -173,58 +181,62 @@
                 "background-color": "gray",
                 "border": "3px solid gray",
             });
-
         }
 
         function reset() {
             clearSound.play();
             total = 0;
-            
             $("#screen").text("");
             $("button").each(function () {
-                $(this).attr("disabled", false);
-                $(this).css({
+                $(this).attr("disabled", false); //按鈕恢復可以按
+                $(this).css({ //按鈕樣式恢復
                     "background-color": "#0b0b0b",
                     "color": "#ffc400",
                     "border": "3px solid #D4A509"
                 });
             });
-
+            $("#num_row").css("pointer-events", "auto");
+            $("#oper_row").css("pointer-events", "none");
+            $("button").hover(function () { //按鈕hover恢復
+                $(this).css({
+                    "background-color": "#D4A509",
+                    "color": "#fff",
+                });
+            }, function () {
+                $(this).css({
+                    "background-color": "#0b0b0b",
+                    "color": "#ffc400",
+                });
+            });
         }
 
         function nextLev() {
             if (level == 3) {
-                j = 1;
+                j++;
             } else if (level == 5) {
-                j = 2;
-            } else if (level == 10) {
-                j = 3;
+                j++;
+            } else if (level % 10 == 0) {
+                j++;
             };
 
-            $('.gamestart').text("NEXT LEVEL");
-            $('.gamestart').css({
-                "font-size": "32px",
-                "padding": "15px 180px",
-                "letter-spacing": "12px",
-            });
+            $(".nextlevel").show();
+            $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
-            $('.gamestart').show();
             $("#screen").text("");
             $("#answer").text("");
-            $('.gamestart').on('click', function () {
-                $(this).stop().hide();
+            total = 0;
+            answer = 0;
+            ran_num = [];
+            ran_oper = [];
+            $(".nextlevel").click(function () {
+                $(this).hide();
                 bingoSound.play();
-                total = 0;
-                answer = 0;
-                $("#screen").text("");
                 $("#oper_row").empty();
                 $("#num_row").empty();
                 gameStart();
-            })
+            });
         }
-
-        //======================================================
     </script>
 </body>
 
