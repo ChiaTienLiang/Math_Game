@@ -52,7 +52,6 @@
         $("#level").text("LEVEL:" + level);
         //==================系統亂術產生數字及運算符號==================
 
-        //NOTE:按完數字時會鎖定數字方，讓玩家只能點選運算符號
         $(function () {
 
             $(".gamestart").on("click", function () {
@@ -246,6 +245,7 @@
                 "padding": "15px 180px",
                 "letter-spacing": "12px",
             });
+            $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
             $('.gamestart').show();
