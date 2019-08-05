@@ -71,30 +71,12 @@
             var a = 0;
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
-                // ran_num.sort(function (a, b) { //數字按大小排列
-                //     return b - a
-                // });
+
                 $("#num_row").append(
                     `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
                 );
                 a++;
             }
-
-            // var a = 0;
-            // for (var i = 0; i < ran_num.length; i++) { //檢查重複 
-            //     // if (ran_num[i] == ran_num[i + 1]) {
-            //     $("#num_row").append(
-            //         `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
-            //     );
-            //     a++;
-            //     console.log(ran_num[i]);
-            //     console.log(ran_num[i].substr(0, 1));
-            //     // } else {
-            //     //     $("#num_row").append(
-            //     //         `<td><button class="num" id="num${ran_num[i]}" onclick="numClick('${ran_num[i]}')">${ran_num[i]}</button></td>`
-            //     //     );
-            //     // }
-            // }
 
             for (var i = 0; i < 2 + j; i++) { //亂數取運算符號
                 ran_oper[i] = oper[Math.floor(Math.random() * 3)];
@@ -239,8 +221,8 @@
             } else if (level % 10 == 0) {
                 j++;
             };
-            $('.gamestart').text("NEXT LEVEL");
-            $('.gamestart').css({
+            $(".gamestart").text("NEXT LEVEL");
+            $(".gamestart").css({
                 "font-size": "32px",
                 "padding": "15px 180px",
                 "letter-spacing": "12px",
@@ -248,10 +230,10 @@
             $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
-            $('.gamestart').show();
+            $(".gamestart").show();
             $("#screen").text("");
             $("#answer").text("");
-            $('.gamestart').on('click', function () {
+            $(".gamestart").on("click", function () {
                 $(this).stop().hide();
                 bingoSound.play();
                 total = 0;
@@ -263,28 +245,6 @@
             })
         }
 
-        // function message() {
-        //     if (confirm("恭喜過關!進入下一關!")) {
-        //         bingoSound.play();
-        //         total = 0;
-        //         answer = 0;
-        //         $("#screen").text("");
-        //         $("#oper_row").empty();
-        //         $("#num_row").empty();
-        // if (level == 3) {
-        //     j = 1;
-        // } else if (level == 5) {
-        //     j = 2;
-        // }
-        // else if(level == 10){
-        //     j=3;
-        // }
-        //         gameStart();
-        //     } else {
-        //         window.close();
-        //     }
-        //}
-        //======================================================
     </script>
 </body>
 
