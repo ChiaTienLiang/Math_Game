@@ -97,11 +97,6 @@
                         answer += ran_num[i + 1];
                         break;
                     case "–":
-                        if (ran_num[i] < ran_num[i + 1]) { //避免負數
-                            var x = ran_num[i];
-                            ran_num[i] = ran_num[i + 1];
-                            ran_num[i + 1] = x;
-                        }
                         answer -= ran_num[i + 1];
                         break;
                     case "×":
