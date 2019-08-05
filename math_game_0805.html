@@ -55,7 +55,7 @@
         $(function () {
 
             $(".gamestart").on("click", function () {
-                $(this).stop().hide();
+                $(this).hide();
                 gameStart();
             });
         })
@@ -229,7 +229,7 @@
             $("#screen").text("");
             $("#answer").text("");
             $(".gamestart").on("click", function () {
-                $(this).stop().hide();
+                $(this).hide();
                 bingoSound.play();
                 total = 0;
                 answer = 0;
