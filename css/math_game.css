@@ -11,7 +11,9 @@ table {
     /* background-color: rgb(159, 163, 167); */
 }
 
-#screen,#answer,#equal {
+#screen,
+#answer,
+#equal {
     font-family: fantasy;
     color: salmon;
     font-size: 120px;
@@ -58,7 +60,8 @@ body {
 }
 
 .gamestart,
-.restart {
+.restart,
+.nextlevel {
     padding: 15px 250px;
     border: 3px solid #D4A509;
     line-height: 40px;
@@ -72,15 +75,26 @@ body {
     text-align: center;
 }
 
-.gamestart{
+
+.gamestart {
     margin: 0px 10%;
     font-size: 50px;
 }
-.restart{
+
+.nextlevel {
+    font-size: 35px;
+    padding: 15px 180px;
+    letter-spacing: 12px;
+    margin: 0px 10%;
+
+}
+
+.restart {
     margin: 10px;
     font-size: 30px;
 }
-#re{
+
+#re {
     text-align: center;
 }
 
@@ -106,6 +120,7 @@ button:hover,
 }
 
 .gamestart:hover,
+.nextlevel:hover,
 #restart:hover {
     background: #D4A509;
     color: #fff;
