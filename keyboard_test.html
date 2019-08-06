@@ -57,9 +57,6 @@
                 <button id="hint">HINT</button>
             </div>
         </div>
-        <!-- <div class="col-lg-3  h-100">
-
-        </div> -->
     </div>
     <script>
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
@@ -72,14 +69,11 @@
         $("#level").text("LEVEL:" + level);
         var op;
         var numbutId = []; //存放ID用
+        var numbutId2 = [];
         var opbutId = [];
         //==================系統亂術產生數字及運算符號==================
 
         $(function () {
-            // $(".gamestart").on("click", function () {
-            //     $(this).stop().hide();
-            //     gameStart();
-            // });
             $("#nextlevel").hide();
             $("#gamestart").click(function () {
                 $(this).hide();
@@ -87,9 +81,9 @@
             });
         });
 
-
-
         function gameStart() {
+            numbutId = [];
+            numbutId2 = [];
             $("#equal").text("=");
             $("#oper_row").css("pointer-events", "none");
             $("#num_row").css("pointer-events", "auto");
@@ -101,13 +95,11 @@
 
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
-                // ran_num.sort(function (a, b) { //數字按大小排列
-                //     return b - a
-                // });
                 $("#num_row").append(
                     `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
                 );
                 numbutId[i] = `num${ran_num[i]}-${a}`; //存放每個數字按鈕的ID
+                numbutId2[i] = numbutId[i];
                 a++;
             }
 
@@ -156,16 +148,12 @@
         var total = 0;
         var temp = 0;
 
+
         function numClick(num) {
             $("#num_row").css("pointer-events", "none");
             $("#oper_row").css("pointer-events", "auto");
-            // numbutId[i] = "";
-            // console.log(numbutId);
-            // console.log(num);
             for (var i = 0; i < numbutId.length; i++) {
-                console.log(numbutId[i].substr(3, 1));
                 if (numbutId[i].substr(3, numbutId[i].length) == num) {
-                    console.log(numbutId[i]);
                     numbutId[i] = "";
                     break;
                 }
@@ -213,7 +201,7 @@
         function opClick(str) {
             $("#oper_row").css({
                 "pointer-events": "none",
-                //NOTE:增加顏色變淡
+                //NOTE:待增加功能:顏色變淡
             });
             $("#num_row").css("pointer-events", "auto");
 
@@ -231,6 +219,12 @@
             clearSound.play();
             total = 0;
             op = "";
+            console.log(numbutId);
+            console.log(numbutId2);
+            for (var i = 0; i < numbutId.length; i++) {
+                numbutId2[i] = numbutId[i];
+            }
+
             $("#screen").text("");
             $("button").each(function () {
                 $(this).attr("disabled", false); //按鈕恢復可以按
@@ -276,63 +270,61 @@
             } else if (level % 10 == 0) {
                 j++;
             };
-
             $("#nextlevel").show();
             $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
             $("#screen").text("");
             $("#answer").text("");
-
         }
 
 
         $(document).keypress(function (event) {
-            $("#num_row").css("pointer-events", "none");
-            $("#oper_row").css("pointer-events", "auto");
-            btnSound.play();
-            var Evekey = event.keyCode;
-            var temp_numID = [];
-            // console.log(Evekey);
-            // var numBot= document.getElementById("num"+substr(0,1));
-            for (var i = 0; i < numbutId.length; i++) {
-                temp_numID[i] = numbutId[i].substr(3, 1);
-                if (Evekey == Number(temp_numID[i]) + 48) {
-                    $("#" + numbutId[i]).attr("disabled", "disabled");
-                    $("#" + numbutId[i]).css({
-                        "background-color": "gray",
-                        "border": "3px solid gray"
-                    });
-                    if (op == undefined) {
-                        total += (Evekey - 48);
-                        $("#screen").text(total);
-                    } else {
-                        switch (op) {
-                            case "+":
-                                total = total + (Evekey - 48);
-                                break;
-                            case "–":
-                                total = total - (Evekey - 48);
-                                break;
-                            case "×":
-                                total = total * (Evekey - 48);
-                                break;
-                            default:
-                                total = total + (Evekey - 48);
-                                break;
+            if ($("#num_row").css("pointer-events") != "none") {
+                $("#num_row").css("pointer-events", "none");
+                $("#oper_row").css("pointer-events", "auto");
+                btnSound.play();
+                var Evekey = event.keyCode;
+                var temp_numID = [];
+                for (var i = 0; i < numbutId2.length; i++) {
+                    temp_numID[i] = numbutId2[i].substr(3, 1);
+                    if (Evekey == Number(temp_numID[i]) + 48) {
+                        $("#" + numbutId2[i]).attr("disabled", "disabled");
+                        $("#" + numbutId2[i]).css({
+                            "background-color": "gray",
+                            "border": "3px solid gray"
+                        });
+                        if (op == undefined) {
+                            total += (Evekey - 48);
+                            $("#screen").text(total);
+                        } else {
+                            switch (op) {
+                                case "+":
+                                    total = total + (Evekey - 48);
+                                    break;
+                                case "–":
+                                    total = total - (Evekey - 48);
+                                    break;
+                                case "×":
+                                    total = total * (Evekey - 48);
+                                    break;
+                                default:
+                                    total = total + (Evekey - 48);
+                                    break;
+                            }
                         }
+                        $("#screen").text(total);
+                        if (total == answer) {
+                            level++;
+                            $("#level").text("LEVEL:" + level);
+                            nextLev();
+                        }
+                        numbutId2[i] = "";
+                        break;
                     }
-                    $("#screen").text(total);
-                    if (total == answer) {
-                        level++;
-                        $("#level").text("LEVEL:" + level);
-                        nextLev();
-                    }
-                    numbutId[i] = "";
-                    break;
-                }
 
-                console.log(numbutId[i]);
+                    // console.log(numbutId[i]);
+                }
             }
         });
     </script>
