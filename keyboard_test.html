@@ -57,6 +57,9 @@
                 <button id="hint">HINT</button>
             </div>
         </div>
+        <!-- <div class="col-lg-3  h-100">
+
+        </div> -->
     </div>
     <script>
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
@@ -67,7 +70,7 @@
         var j = 0; //第一階段j=0，第二階段J=1以此類推，讓i+J增加一個數字跟符號
         var answer = 0;
         $("#level").text("LEVEL:" + level);
-
+        var op;
         var numbutId = []; //存放ID用
         var opbutId = [];
         //==================系統亂術產生數字及運算符號==================
@@ -90,6 +93,7 @@
             var oper = ["+", "–", "×"];
             var ran_oper = [];
             var a = 0;
+
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
                 $("#num_row").append(
@@ -147,7 +151,7 @@
         function numClick(num) {
             $("#num_row").css("pointer-events", "none");
             $("#oper_row").css("pointer-events", "auto");
-            console.log(num);
+            console.log(op);
             btnSound.play();
             document.getElementById("screen").value = "";
             var temp_num = document.getElementById("num" + num);
@@ -160,7 +164,7 @@
             document.getElementById("screen").value = document.getElementById("screen").value + num.substr(0, 1);
             firstNum = document.getElementById("screen").value;
 
-            if (total == 0) {
+            if (op == undefined) {
                 total += Number(firstNum);
                 $("#screen").text(total);
             } else {
@@ -173,6 +177,9 @@
                         break;
                     case "×":
                         total = total * Number(firstNum);
+                        break;
+                    default:
+                        total = total + Number(firstNum);
                         break;
                 }
             }
@@ -195,6 +202,7 @@
 
             btnSound.play();
             op = str.substr(0, 1);
+            console.log(op);
             var temp_oper = document.getElementById("oper" + str);
             $(temp_oper).attr("disabled", true);
             $(temp_oper).css({
@@ -206,6 +214,7 @@
         function reset() {
             clearSound.play();
             total = 0;
+            op = "";
             $("#screen").text("");
             $("button").each(function () {
                 $(this).attr("disabled", false); //按鈕恢復可以按
@@ -236,9 +245,9 @@
             $("#num_row").empty();
             total = 0;
             answer = 0;
+            op = "";
             gameStart();
         });
-
 
         function nextLev() {
             if (level == 3) {
@@ -248,7 +257,6 @@
             } else if (level % 10 == 0) {
                 j++;
             };
-
             $("#nextlevel").show();
             $("#equal").text("");
             $("#oper_row").empty();
@@ -256,6 +264,7 @@
             $("#screen").text("");
             $("#answer").text("");
         }
+
 
         $(document).keypress(function (event) {
             btnSound.play();
@@ -278,6 +287,9 @@
                 }
                 console.log(numbutId[i]);
             }
+            num = Evekey - 48;
+            console.log(num);
+            return (num);
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
