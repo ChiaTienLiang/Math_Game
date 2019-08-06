@@ -3,44 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/math_game.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/test.css">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>ThinKinG</title>
 </head>
 
-<body>
-    <div class="wrap">
-        <!-- <h6 id="level">LEVEL:</h6> -->
-        <table>
-            <tr>
-                <td colspan="3" id="level">LEVEL:</td>
-            </tr>
-            <tr>
-                <td id="screen"></td>
-                <td id="equal"></td>
-                <td id="answer"></td>
-                <!-- <td id="level">LEVEL:</td> -->
-            </tr>
-        </table>
-        <table>
-            <tr id="oper_row">
-            </tr>
-            <p>
-            </p>
-        </table>
-        <div>
-            <button class="gamestart">START</button>
-            <button class="nextlevel">NEXT LEVEL</button>
+<body class="bo">
+    <div class="row">
+        <div class="col-lg-3  h-100">
+            <ul style='list-style-type:decimal;'>
+                <h3>遊戲指引:</h3>
+                <li>此遊戲為個位數字1~9的算術遊戲</li>
+                <li>左上方為玩家輸入數字之總和</li>
+                <li>右上方為目前關卡以及答案</li>
+                <li>只要與右方數字相同即可進入下一關</li>
+            </ul>
+            <ul style='list-style-type:square;'>
+                <h3>注意事項:</h3>
+                <li>每個按鈕只能按一次</li>
+                <li>沒有先乘除後加減</li>
+                <li>無法連續按多個數字或符號</li>
+            </ul>
         </div>
-        <table>
-            <tr id="num_row">
-            </tr>
-        </table>
-    </div>
-    <div id="re">
-        <button class="restart" id="restart" onclick="reset()">CLEAR</button>
+        <div class="col-lg-9  h-100">
+            <table id="tpscr">
+                <tr>
+                    <td colspan="3" id="level">LEVEL:</td>
+                </tr>
+                <tr>
+                    <td id="screen"></td>
+                    <td id="equal"></td>
+                    <td id="answer"></td>
+                </tr>
+            </table>
+            <div>
+                <button id="gamestart">START</button>
+                <button id="nextlevel">NEXT LEVEL</button>
+            </div>
+            <table>
+                <tr id="num_row">
+                </tr>
+            </table>
+            <table>
+                <tr id="oper_row">
+                </tr>
+            </table>
+            <div id="re">
+                <button class="restart" id="restart" onclick="reset()">CLEAR</button>
+                <button id="hint">HINT</button>
+            </div>
+        </div>
+        <!-- <div class="col-lg-3  h-100">
+
+        </div> -->
     </div>
     <script>
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
@@ -54,8 +73,8 @@
         //==================系統亂術產生數字及運算符號==================
 
         $(function () {
-            $(".nextlevel").hide();
-            $(".gamestart").click(function () {
+            $("#nextlevel").hide();
+            $("#gamestart").click(function () {
                 $(this).hide();
                 gameStart();
             });
@@ -72,6 +91,7 @@
             var ran_oper = [];
             var a = 0;
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
+                ran_num[i] = Math.ceil(Math.random() * 9);
                 $("#num_row").append(
                     `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
                 );
@@ -205,7 +225,7 @@
                 });
             });
         }
-        $(".nextlevel").click(function () {
+        $("#nextlevel").click(function () {
             $(this).hide();
             bingoSound.play();
             $("#oper_row").empty();
@@ -213,7 +233,6 @@
             total = 0;
             answer = 0;
             gameStart();
-
         });
 
         function nextLev() {
@@ -224,20 +243,22 @@
             } else if (level % 10 == 0) {
                 j++;
             };
-            // $(".gamestart").text("NEXT LEVEL");
-            // $(".gamestart").css({
-            //     "font-size": "32px",
-            //     "padding": "15px 180px",
-            //     "letter-spacing": "12px",
-            // });
-            $(".nextlevel").show();
+            $("#nextlevel").show();
             $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
             $("#screen").text("");
             $("#answer").text("");
-
         }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
     </script>
 </body>
 
