@@ -15,9 +15,21 @@
 <body class="bo">
     <div class="row">
         <div class="col-lg-3  h-100">
-
+            <ul style='list-style-type:decimal;'>
+                <h3>遊戲指引:</h3>
+                <li>此遊戲為個位數字1~9的算術遊戲</li>
+                <li>左上方為玩家輸入數字之總和</li>
+                <li>右上方為目前關卡以及答案</li>
+                <li>只要與右方數字相同即可進入下一關</li>
+            </ul>
+            <ul style='list-style-type:square;'>
+                <h3>注意事項:</h3>
+                <li>每個按鈕只能按一次</li>
+                <li>沒有先乘除後加減</li>
+                <li>無法連續按多個數字或符號</li>
+            </ul>
         </div>
-        <div class="col-lg-6  h-100">
+        <div class="col-lg-9  h-100">
             <table id="tpscr">
                 <tr>
                     <td colspan="3" id="level">LEVEL:</td>
@@ -33,37 +45,19 @@
                 <button id="nextlevel">NEXT LEVEL</button>
             </div>
             <table>
-                <tr id="oper_row">
+                <tr id="num_row">
                 </tr>
             </table>
             <table>
-                <tr id="num_row">
+                <tr id="oper_row">
                 </tr>
             </table>
             <div id="re">
                 <button class="restart" id="restart" onclick="reset()">CLEAR</button>
+                <button id="hint">HINT</button>
             </div>
         </div>
-        <div class="col-lg-3  h-100">
-            <ul style='list-style-type:decimal;'>
-                <h3>遊戲指引:</h3>
-                <li>此遊戲為個位數字1~9的算術遊戲</li>
-                <li>左上方為玩家輸入數字之總和</li>
-                <li>右上方為目前關卡以及答案</li>
-                <li>只要與右方數字相同即可進入下一關</li>
-            </ul>
-            <br>
-            <ul style='list-style-type:circle;'>
-                <h3>注意事項:</h3>
-                <li>每個按鈕只能按一次</li>
-                <li>沒有先乘除後加減</li>
-                <li>無法連續按多個數字或符號</li>
-            </ul>
-        </div>
-
     </div>
-
-
     <script>
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
         var bingoSound = new Audio("Soundeffect/coin05.mp3");
@@ -73,6 +67,9 @@
         var j = 0; //第一階段j=0，第二階段J=1以此類推，讓i+J增加一個數字跟符號
         var answer = 0;
         $("#level").text("LEVEL:" + level);
+
+        var numbutId = []; //存放ID用
+        var opbutId = [];
         //==================系統亂術產生數字及運算符號==================
 
         $(function () {
@@ -95,10 +92,10 @@
             var a = 0;
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
-
                 $("#num_row").append(
                     `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
                 );
+                numbutId[i] = `num${ran_num[i]}-${a}`; //存放每個數字按鈕的ID
                 a++;
             }
 
@@ -112,7 +109,7 @@
 
             shuffle(ran_num); //呼叫亂數排列的function
             shuffle(ran_oper);
-            console.log(ran_num);
+            console.log(ran_num); //偷看答案用
             console.log(ran_oper);
             answer = ran_num[0];
             for (i = 0; i < ran_oper.length; i++) {
@@ -150,7 +147,7 @@
         function numClick(num) {
             $("#num_row").css("pointer-events", "none");
             $("#oper_row").css("pointer-events", "auto");
-
+            console.log(num);
             btnSound.play();
             document.getElementById("screen").value = "";
             var temp_num = document.getElementById("num" + num);
@@ -190,7 +187,10 @@
         };
 
         function opClick(str) {
-            $("#oper_row").css("pointer-events", " none");
+            $("#oper_row").css({
+                "pointer-events": "none",
+                //NOTE:增加顏色變淡
+            });
             $("#num_row").css("pointer-events", "auto");
 
             btnSound.play();
@@ -237,8 +237,8 @@
             total = 0;
             answer = 0;
             gameStart();
-
         });
+
 
         function nextLev() {
             if (level == 3) {
@@ -248,15 +248,37 @@
             } else if (level % 10 == 0) {
                 j++;
             };
-            
+
             $("#nextlevel").show();
             $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
             $("#screen").text("");
             $("#answer").text("");
-
         }
+
+        $(document).keypress(function (event) {
+            btnSound.play();
+            // console.log(numbutId);
+            var Evekey = event.keyCode;
+            var temp_numID = [];
+            // console.log(Evekey);
+            // var numBot= document.getElementById("num"+substr(0,1));
+            for (var i = 0; i < numbutId.length; i++) {
+                temp_numID[i] = numbutId[i].substr(3, 1);
+                if (Evekey == Number(temp_numID[i]) + 48) {
+
+                    $("#" + numbutId[i]).attr("disabled", "disabled");
+                    $("#" + numbutId[i]).css({
+                        "background-color": "gray",
+                        "border": "3px solid gray"
+                    });
+                    numbutId[i] = "";
+                    break;
+                }
+                console.log(numbutId[i]);
+            }
+        });
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
