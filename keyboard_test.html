@@ -76,12 +76,17 @@
         //==================系統亂術產生數字及運算符號==================
 
         $(function () {
+            // $(".gamestart").on("click", function () {
+            //     $(this).stop().hide();
+            //     gameStart();
+            // });
             $("#nextlevel").hide();
             $("#gamestart").click(function () {
                 $(this).hide();
                 gameStart();
             });
         });
+
 
 
         function gameStart() {
@@ -96,6 +101,9 @@
 
             for (var i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
+                // ran_num.sort(function (a, b) { //數字按大小排列
+                //     return b - a
+                // });
                 $("#num_row").append(
                     `<td><button class="num" id="num${ran_num[i]}-${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
                 );
@@ -151,11 +159,21 @@
         function numClick(num) {
             $("#num_row").css("pointer-events", "none");
             $("#oper_row").css("pointer-events", "auto");
-            console.log(op);
+            // numbutId[i] = "";
+            // console.log(numbutId);
+            // console.log(num);
+            for (var i = 0; i < numbutId.length; i++) {
+                console.log(numbutId[i].substr(3, 1));
+                if (numbutId[i].substr(3, numbutId[i].length) == num) {
+                    console.log(numbutId[i]);
+                    numbutId[i] = "";
+                    break;
+                }
+            }
+            // console.log(numbutId);
             btnSound.play();
             document.getElementById("screen").value = "";
             var temp_num = document.getElementById("num" + num);
-
             $(temp_num).attr("disabled", "disabled");
             $(temp_num).css({
                 "background-color": "gray",
@@ -188,7 +206,6 @@
             if (total == answer) {
                 level++;
                 $("#level").text("LEVEL:" + level);
-                // message();
                 nextLev();
             }
         };
@@ -202,7 +219,6 @@
 
             btnSound.play();
             op = str.substr(0, 1);
-            console.log(op);
             var temp_oper = document.getElementById("oper" + str);
             $(temp_oper).attr("disabled", true);
             $(temp_oper).css({
@@ -248,6 +264,9 @@
             op = "";
             gameStart();
         });
+        // $("#hint").click(function () {
+
+        // });
 
         function nextLev() {
             if (level == 3) {
@@ -257,18 +276,21 @@
             } else if (level % 10 == 0) {
                 j++;
             };
+
             $("#nextlevel").show();
             $("#equal").text("");
             $("#oper_row").empty();
             $("#num_row").empty();
             $("#screen").text("");
             $("#answer").text("");
+
         }
 
 
         $(document).keypress(function (event) {
+            $("#num_row").css("pointer-events", "none");
+            $("#oper_row").css("pointer-events", "auto");
             btnSound.play();
-            // console.log(numbutId);
             var Evekey = event.keyCode;
             var temp_numID = [];
             // console.log(Evekey);
@@ -276,20 +298,42 @@
             for (var i = 0; i < numbutId.length; i++) {
                 temp_numID[i] = numbutId[i].substr(3, 1);
                 if (Evekey == Number(temp_numID[i]) + 48) {
-
                     $("#" + numbutId[i]).attr("disabled", "disabled");
                     $("#" + numbutId[i]).css({
                         "background-color": "gray",
                         "border": "3px solid gray"
                     });
+                    if (op == undefined) {
+                        total += (Evekey - 48);
+                        $("#screen").text(total);
+                    } else {
+                        switch (op) {
+                            case "+":
+                                total = total + (Evekey - 48);
+                                break;
+                            case "–":
+                                total = total - (Evekey - 48);
+                                break;
+                            case "×":
+                                total = total * (Evekey - 48);
+                                break;
+                            default:
+                                total = total + (Evekey - 48);
+                                break;
+                        }
+                    }
+                    $("#screen").text(total);
+                    if (total == answer) {
+                        level++;
+                        $("#level").text("LEVEL:" + level);
+                        nextLev();
+                    }
                     numbutId[i] = "";
                     break;
                 }
+
                 console.log(numbutId[i]);
             }
-            num = Evekey - 48;
-            console.log(num);
-            return (num);
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
