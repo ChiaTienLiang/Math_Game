@@ -98,9 +98,9 @@ html {
 
 #nextlevel {
     font-size: 20px;
-    padding: 15px 180px;
+    padding:auto;
     letter-spacing: 12px;
-    margin: 0px 10%;
+    margin:auto;
 }
 
 #hint,
@@ -127,10 +127,13 @@ html {
     cursor: pointer;
     font-size: 50px;
     text-align: center;
-    width: 150px;
+    /* width: 50%; */
     outline: none;
     /* margin: 15px; */
 }
+#oper_row button{width: 30%;}
+
+#num_row button{width: 50%;}
 
 button:hover,
 #hint:hover,
