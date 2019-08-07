@@ -11,6 +11,9 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>ThinKinG</title>
 </head>
+<!-- <audio autoplay>
+    <source src="Soundeffect/miku.mp3" type="audio/mpeg" />
+</audio> -->
 
 <body class="bo">
     <div class="row">
@@ -65,7 +68,7 @@
         var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
         var bingoSound = new Audio("Soundeffect/coin05.mp3");
         var clearSound = new Audio("Soundeffect/powerdown07.mp3");
-        var mouseSound = new Audio("Soundeffect/mousein.mp3");
+        // var miku = new Audio("Soundeffect/miku.mp3");
         var level = 1;
         var j = 0; //第一階段j=0，第二階段J=1以此類推，讓i+J增加一個數字跟符號
         var answer = 0;
@@ -75,20 +78,25 @@
         var temp_numID = []; //用於判斷是否已經按過，按過後清除該位置ID
         var opid_fokey = []; //存放ID用 (符號)
         var temp_operID = [];
+        var hint_time;
+        var hint_answer = []
         //==================系統亂術產生數字及運算符號==================
 
-        $(function () {
-            $("#nextlevel").hide();
-            $("#gamestart").click(function () {
-                $(this).hide();
-                gameStart();
+        window.onload = function () {
+
+            $(function () {
+                $("#nextlevel").hide();
+                $("#gamestart").click(function () {
+                    $(this).hide();
+                    gameStart();
+                });
             });
-        });
+        }
+
 
         function gameStart() {
             numid_fokey = [];
             opid_fokey = [];
-            // numbutId2 = [];
             $("#equal").text("=");
             $("#oper_row").css("pointer-events", "none");
             $("#num_row").css("pointer-events", "auto");
@@ -98,36 +106,32 @@
             var ran_oper = [];
             var a = 0;
 
-            for (var i = 0; i < 3 + j; i++) { //亂數取1-9
+            for (let i = 0; i < 3 + j; i++) { //亂數取1-9
                 ran_num[i] = Math.ceil(Math.random() * 9);
-                // ran_num.sort(function (a, b) { //數字按大小排列
-                //     return b - a
-                // });
                 $("#num_row").append(
-                    `<td><button class="num" id="num${ran_num[i]}_${a}" onclick="numClick('${ran_num[i]}-${a}')">${ran_num[i]}</button></td>`
+                    `<td><button class="num" id="${ran_num[i]}_${a}" onclick="numClick('${ran_num[i]}_${a}')">${ran_num[i]}</button></td>`
                 );
-                numid_fokey[i] = `num${ran_num[i]}_${a}`; //存放每個數字按鈕的ID
-                temp_numID[i] = numid_fokey[i].substr(3, 1);
+                numid_fokey[i] = `${ran_num[i]}_${a}`; //存放每個數字按鈕的ID
+                temp_numID[i] = numid_fokey[i].substr(0, 1);
                 a++;
-
             }
 
-            for (var i = 0; i < 2 + j; i++) { //亂數取運算符號
+            for (let i = 0; i < 2 + j; i++) { //亂數取運算符號
                 ran_oper[i] = oper[Math.floor(Math.random() * 3)];
                 switch (ran_oper[i]) {
                     case "plus":
                         $("#oper_row").append(
-                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}-${a}')">+</button></td>`
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">+</button></td>`
                         );
                         break;
                     case "minu":
                         $("#oper_row").append(
-                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}-${a}')">×</button></td>`
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">–</button></td>`
                         );
                         break;
                     case "mult":
                         $("#oper_row").append(
-                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}-${a}')">–</button></td>`
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">×</button></td>`
                         );
                         break;
                 }
@@ -135,13 +139,18 @@
                 temp_operID[i] = opid_fokey[i].substr(0, 4);
                 a++;
             }
-
             shuffle(ran_num); //呼叫亂數排列的function
             shuffle(ran_oper);
             console.log(ran_num); //偷看答案用
             console.log(ran_oper);
+            for (let i = 0; i < ran_num.length; i++) {
+                hint_answer[i * 2] = ran_num[i];
+                hint_answer[i * 2 + 1] = ran_oper[i];
+            }
+            console.log(hint_answer);
+
             answer = ran_num[0];
-            for (i = 0; i < ran_oper.length; i++) {
+            for (let i = 0; i < ran_oper.length; i++) {
 
                 switch (ran_oper[i]) {
                     case "plus":
@@ -159,8 +168,8 @@
         }
 
         function shuffle(arr) { //亂數排列數字跟符號再去運算
-            var i, j, temp;
-            for (i = arr.length - 1; i > 0; i--) {
+            let i, j, temp;
+            for (let i = arr.length - 1; i > 0; i--) {
                 j = Math.floor(Math.random() * (i + 1));
                 temp = arr[i];
                 arr[i] = arr[j];
@@ -177,21 +186,17 @@
         function numClick(num) {
             $("#num_row").css("pointer-events", "none");
             $("#oper_row").css("pointer-events", "auto");
-            // numbutId[i] = "";
-            // console.log(numbutId);
-            // console.log(num);
-            for (var i = 0; i < numid_fokey.length; i++) {
+            for (let i = 0; i < numid_fokey.length; i++) {
                 // console.log(numbutId[i].substr(3, 1));
-                if (numid_fokey[i].substr(3, numid_fokey[i].length) == num) {
-                    // console.log(numbutId[i]);
-                    numid_fokey[i] = "";
+                if (temp_numID[i] == num) {
+                    temp_numID[i] = "";
                     break;
                 }
             }
             // console.log(numbutId);
             btnSound.play();
             document.getElementById("screen").value = "";
-            var temp_num = document.getElementById("num" + num);
+            var temp_num = document.getElementById(num);
             $(temp_num).attr("disabled", "disabled");
             $(temp_num).css({
                 "background-color": "gray",
@@ -235,10 +240,15 @@
             });
             $("#num_row").css("pointer-events", "auto");
             btnSound.play();
-            op = str.substr(0, 1);
-            var temp_oper = document.getElementById(str); //"oper" + 
-            $(temp_oper).attr("disabled", true);
-            $(temp_oper).css({
+            op = str.substr(0, 4);
+            for (let i = 0; i < opid_fokey.length; i++) {
+                if (temp_operID[i] == op) {
+                    temp_operID[i] = "";
+                    break;
+                }
+            }
+            $("#" + str).attr("disabled", true);
+            $("#" + str).css({
                 "background-color": "gray",
                 "border": "3px solid gray",
             });
@@ -249,12 +259,12 @@
             total = 0;
             op = "";
             console.log(numid_fokey);
-            // console.log(numbutId2);
-            for (var i = 0; i < numid_fokey.length; i++) {
-                temp_numID[i] = numid_fokey[i].substr(3, 1);
+            console.log(opid_fokey);
+            for (let i = 0; i < numid_fokey.length; i++) {
+                temp_numID[i] = numid_fokey[i].substr(0, 1);
             }
-            for (var i = 0; i < opid_fokey.length; i++) {
-                temp_operID[i] = opid_fokey[i].substr(4, 1);
+            for (let i = 0; i < opid_fokey.length; i++) {
+                temp_operID[i] = opid_fokey[i].substr(0, 4);
             }
 
             $("#screen").text("");
@@ -290,9 +300,15 @@
             op = "";
             gameStart();
         });
-        // $("#hint").click(function () {
 
-        // });
+        $("#hint").click(function (e) {
+            var albutol = opid_fokey.length + numid_fokey.length;
+            for (let i = 1; i <= numid_fokey.length; i++) {
+                hint_time = setTimeout(function () {
+                    console.log(e);
+                }, 500 * i);
+            }
+        });
 
         function nextLev() {
             if (level == 3) {
@@ -313,9 +329,8 @@
         $(document).keypress(function (event) {
 
             var Evekey = event.keyCode;
-            console.log(temp_numID);
             if ($("#num_row").css("pointer-events") != "none") {
-                for (var i = 0; i < numid_fokey.length; i++) {
+                for (let i = 0; i < numid_fokey.length; i++) {
                     if (Evekey == Number(temp_numID[i]) + 48) {
                         btnSound.play();
                         $("#num_row").css("pointer-events", "none");
@@ -355,8 +370,7 @@
                     }
                 }
             } else if ($("#num_row").css("pointer-events") == "none") {
-                console.log(opid_fokey);
-                for (var i = 0; i < opid_fokey.length; i++) {
+                for (let i = 0; i < opid_fokey.length; i++) {
                     if (Evekey == 45 && temp_operID[i] == "minu") { //-
                         op = temp_operID[i];
                         temp_operID[i] = "";
@@ -369,7 +383,7 @@
                             "border": "3px solid gray"
                         });
                         break;
-                    } else if (Evekey == 42 && temp_operID[i] == "mult") { //* shift+8的keycode是42
+                    } else if (Evekey == 42 && temp_operID[i] == "mult") { //* shift+8的keycode是42  
                         btnSound.play();
                         op = temp_operID[i];
                         temp_operID[i] = "";
@@ -383,14 +397,10 @@
                         break;
                     } else if (Evekey == 43 && temp_operID[i] == "plus") { //+ shift+=的keycode是43
                         btnSound.play();
-                        // console.log(`#${opid_fokey[i]}`);
-                        console.log(opid_fokey[i]);
                         op = temp_operID[i];
                         temp_operID[i] = "";
                         $("#num_row").css("pointer-events", "auto");
                         $("#oper_row").css("pointer-events", "none");
-                        var x = document.getElementById(`${opid_fokey[i]}`);
-                        console.log(x);
                         $(`#${opid_fokey[i]}`).attr("disabled", true);
                         $(`#${opid_fokey[i]}`).css({
                             "background-color": "gray",
