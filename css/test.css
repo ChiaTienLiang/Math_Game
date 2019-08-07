@@ -54,14 +54,14 @@ table {
 }
 
 html {
-    height: 100%;
+    height: 100vh;
 }
 
 .bo {
-    height: 100%;
+    height: 100vh;
     background: #272323;
     text-align: center;
-    width: 95%;
+    width: 95vw;
 }
 
 .row {
@@ -93,20 +93,19 @@ html {
 }
 
 #gamestart {
-    font-size: 50px;
+    font-size: 3rem;
 }
 
 #nextlevel {
-    font-size: 20px;
-    padding:auto;
-    letter-spacing: 12px;
-    margin:auto;
+    font-size: 2rem;
+    padding: auto;
+    margin: auto;
 }
 
 #hint,
 #restart {
     margin: 0% 2%;
-    font-size: 30px;
+    font-size: 2rem;
     width: 40%;
     padding: 10px;
 }
@@ -125,15 +124,20 @@ html {
     color: #ffc400;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 50px;
+    font-size: 5vh;
     text-align: center;
     /* width: 50%; */
     outline: none;
     /* margin: 15px; */
 }
-#oper_row button{width: 30%;}
 
-#num_row button{width: 50%;}
+#oper_row button {
+    width: 30%;
+}
+
+#num_row button {
+    width: 50%;
+}
 
 button:hover,
 #hint:hover,
