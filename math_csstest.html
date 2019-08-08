@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/test.css">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>ThinKinG</title>
+</head>
+<!-- <audio autoplay>
+    <source src="Soundeffect/miku.mp3" type="audio/mpeg" />
+</audio> -->
+
+<body class="bo">
+    <div class="row">
+        <div class="col-lg-3  h-100">
+            <ul style='list-style-type:decimal;'>
+                <h3>遊戲指引:</h3>
+                <li>此遊戲為個位數字1~9的算術遊戲</li>
+                <li>左上方為玩家輸入數字之總和</li>
+                <li>右上方為目前關卡以及答案</li>
+                <li>只要與右方數字相同即可進入下一關</li>
+            </ul>
+            <ul style='list-style-type:square;'>
+                <h3>注意事項:</h3>
+                <li>每個按鈕只能按一次</li>
+                <li>沒有先乘除後加減</li>
+                <li>無法連續按多個數字或符號</li>
+            </ul>
+        </div>
+        <div class="col-lg-9  h-100">
+            <table id="tpscr">
+                <tr>
+                    <td colspan="3" id="level">LEVEL:</td>
+                </tr>
+                <tr>
+                    <td id="screen"></td>
+                    <td id="equal"></td>
+                    <td id="answer"></td>
+                </tr>
+            </table>
+            <div>
+                <button id="gamestart">START</button>
+                <button id="nextlevel">NEXT LEVEL</button>
+            </div>
+            <table>
+                <tr id="num_row">
+                </tr>
+            </table>
+            <table>
+                <tr id="oper_row">
+                </tr>
+            </table>
+            <div id="re">
+                <button class="restart" id="restart" onclick="reset()">CLEAR</button>
+                <button id="hint">HINT</button>
+            </div>
+        </div>
+        <!-- <div class="col-lg-3  h-100">
+
+        </div> -->
+    </div>
+    <script>
+        var btnSound = new Audio("Soundeffect/pushing_a_key.mp3");
+        var bingoSound = new Audio("Soundeffect/coin05.mp3");
+        var clearSound = new Audio("Soundeffect/powerdown07.mp3");
+        // var miku = new Audio("Soundeffect/miku.mp3");
+        var level = 1;
+        var j = 0; //第一階段j=0，第二階段J=1以此類推，讓i+J增加一個數字跟符號
+        var answer = 0;
+        $("#level").text("LEVEL:" + level);
+        var op;
+        var numid_fokey = []; //存放ID用 (數字)
+        var temp_numID = []; //用於判斷是否已經按過，按過後清除該位置ID
+        var opid_fokey = []; //存放ID用 (符號)
+        var temp_operID = [];
+        var hint_time;
+        var hint_answer = []
+        //==================系統亂術產生數字及運算符號==================
+
+        window.onload = function () {
+
+            $(function () {
+                $("#nextlevel").hide();
+                $("#gamestart").click(function () {
+                    $(this).hide();
+                    gameStart();
+                });
+            });
+        }
+
+        function gameStart() {
+            numid_fokey = [];
+            opid_fokey = [];
+            temp_numID = [];
+            temp_operID = [];
+            var ran_num = [];
+            var oper = ["plus", "minu", "mult"];
+            var ran_oper = [];
+            var a = 0;
+            $("#equal").text("=");
+            $("#oper_row").css("pointer-events", "none");
+            $("#num_row").css("pointer-events", "auto");
+            for (let i = 0; i < 3 + j; i++) { //亂數取1-9
+                ran_num[i] = Math.ceil(Math.random() * 9);
+                // ran_num.sort(function (a, b) { //數字按大小排列
+                //     return b - a
+                // });
+                $("#num_row").append(
+                    `<td><button class="num" id="${ran_num[i]}_${a}" onclick="numClick('${ran_num[i]}_${a}')">${ran_num[i]}</button></td>`
+                );
+                numid_fokey[i] = `${ran_num[i]}_${a}`; //存放每個數字按鈕的ID
+                // temp_numID[i] = ran_num[i];
+                a++;
+
+            }
+
+            for (let i = 0; i < 2 + j; i++) { //亂數取運算符號
+                ran_oper[i] = oper[Math.floor(Math.random() * 3)];
+                switch (ran_oper[i]) {
+                    case "plus":
+                        $("#oper_row").append(
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">+</button></td>`
+                        );
+                        break;
+                    case "minu":
+                        $("#oper_row").append(
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">–</button></td>`
+                        );
+                        break;
+                    case "mult":
+                        $("#oper_row").append(
+                            `<td><button class="oper" id="${ran_oper[i]}_${a}" onclick="opClick('${ran_oper[i]}_${a}')">×</button></td>`
+                        );
+                        break;
+                }
+                opid_fokey[i] = `${ran_oper[i]}_${a}`;
+                // temp_operID[i] = ran_oper[i];
+                a++;
+            }
+            shuffle(numid_fokey); //呼叫亂數排列的function
+            shuffle(opid_fokey);
+            for (let i = 0; i < numid_fokey.length; i++) {
+                temp_numID[i] = numid_fokey[i].substr(0, 1);
+            }
+            for (let i = 0; i < opid_fokey.length; i++) {
+                temp_operID[i] = opid_fokey[i].substr(0, 4);
+            }
+            // console.log(ran_num);  //用於亂數排列按鈕
+            // console.log(ran_oper);
+            // console.log(numid_fokey); //打亂ID陣列
+            // console.log(opid_fokey);
+            console.log(temp_numID); //取用於計算的部分後再去做運算
+            console.log(temp_operID);
+            for (let i = 0; i < ran_num.length; i++) {
+                hint_answer[i * 2] = numid_fokey[i];
+                hint_answer[i * 2 + 1] = opid_fokey[i];
+            }
+            console.log(hint_answer);
+            answer = Number(temp_numID[0]);
+            for (let i = 0; i < temp_operID.length; i++) {
+                switch (temp_operID[i]) {
+                    case "plus":
+                        answer += Number(temp_numID[i + 1]);
+                        break;
+                    case "minu":
+                        answer -= Number(temp_numID[i + 1]);
+                        break;
+                    case "mult":
+                        answer *= Number(temp_numID[i + 1]);
+                        break;
+                }
+            }
+            $("#answer").text(answer);
+        }
+
+        function shuffle(arr) { //亂數排列數字跟符號再去運算
+            let j, temp;
+            for (let i = arr.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+            return arr;
+        };
+
+        //=================下方計算玩家輸入=======================
+        var total = 0;
+        var temp = 0;
+
+
+        function numClick(num) {
+            $("#num_row").css("pointer-events", "none");
+            $("#oper_row").css("pointer-events", "auto");
+            // numbutId[i] = "";
+            // console.log(numbutId);
+            // console.log(num);
+            for (let i = 0; i < numid_fokey.length; i++) {
+                // console.log(numbutId[i].substr(3, 1));
+                if (temp_numID[i] == num) {
+                    // console.log(numbutId[i]);
+                    temp_numID[i] = "";
+                    break;
+                }
+            }
+            btnSound.play();
+            document.getElementById("screen").value = "";
+            // var temp_num = document.getElementById(num);
+            $(`#${num}`).attr("disabled", "disabled");
+            $(`#${num}`).css({
+                "background-color": "gray",
+                "border": "3px solid gray",
+            });
+            document.getElementById("screen").value = document.getElementById("screen").value + num.substr(0, 1);
+            firstNum = document.getElementById("screen").value;
+
+            if (op == undefined) {
+                total += Number(firstNum);
+                $("#screen").text(total);
+            } else {
+                switch (op) {
+                    case "plus":
+                        total = total + Number(firstNum);
+                        break;
+                    case "minu":
+                        total = total - Number(firstNum);
+                        break;
+                    case "mult":
+                        total = total * Number(firstNum);
+                        break;
+                    default:
+                        total = total + Number(firstNum);
+                        break;
+                }
+            }
+
+            $("#screen").text(total);
+            if (total == answer) {
+                level++;
+                $("#level").text("LEVEL:" + level);
+                nextLev();
+            }
+        };
+
+        function opClick(str) {
+            $("#oper_row").css({
+                "pointer-events": "none",
+                //NOTE:待增加功能:顏色變淡
+            });
+            $("#num_row").css("pointer-events", "auto");
+            btnSound.play();
+            op = str.substr(0, 4);
+            for (let i = 0; i < opid_fokey.length; i++) {
+                // console.log(numbutId[i].substr(3, 1));
+                if (temp_operID[i] == op) {
+                    // console.log(numbutId[i]);
+                    temp_operID[i] = "";
+                    break;
+                }
+            }
+            $("#" + str).attr("disabled", true);
+            $("#" + str).css({
+                "background-color": "gray",
+                "border": "3px solid gray",
+            });
+        }
+
+        function reset() {
+            clearSound.play();
+            total = 0;
+            op = "";
+            console.log(numid_fokey);
+            console.log(opid_fokey);
+            for (let i = 0; i < numid_fokey.length; i++) {
+                temp_numID[i] = numid_fokey[i].substr(0, 1);
+            }
+            for (let i = 0; i < opid_fokey.length; i++) {
+                temp_operID[i] = opid_fokey[i].substr(0, 4);
+            }
+
+            $("#screen").text("");
+            $("button").each(function () {
+                $(this).attr("disabled", false); //按鈕恢復可以按
+                $(this).css({ //按鈕樣式恢復
+                    "background-color": "#0b0b0b",
+                    "color": "#ffc400",
+                    "border": "3px solid #D4A509"
+                });
+            });
+            $("#num_row").css("pointer-events", "auto");
+            $("#oper_row").css("pointer-events", "none");
+            $("button").hover(function () { //按鈕hover恢復
+                $(this).css({
+                    "background-color": "#D4A509",
+                    "color": "#fff",
+                });
+            }, function () {
+                $(this).css({
+                    "background-color": "#0b0b0b",
+                    "color": "#ffc400",
+                });
+            });
+        }
+        $("#nextlevel").click(function () {
+            $(this).hide();
+            bingoSound.play();
+            $("#oper_row").empty();
+            $("#num_row").empty();
+            total = 0;
+            answer = 0;
+            op = "";
+            gameStart();
+        });
+
+        $("#hint").click(function () {
+            var albutol = opid_fokey.length + numid_fokey.length;
+            for (let i = 0; i < hint_answer.length - 1; i++) {
+                hint_time = setTimeout(function () {
+                    $(`#${hint_answer[i]}`).css("background-color", "pink");
+                    console.log(hint_answer[i]);
+                }, 500 * i);
+            }
+            reset();
+        });
+
+        // $("#" + numid_fokey[i]).css("background-color", "gray");
+
+
+
+        function nextLev() {
+            if (level == 3) {
+                j++;
+                // } else if (level == 5) {
+                //     j++;
+            } else if (level % 10 == 0) {
+                j++;
+            };
+            $("#nextlevel").show();
+            $("#equal").text("");
+            $("#oper_row").empty();
+            $("#num_row").empty();
+            $("#screen").text("");
+            $("#answer").text("");
+        }
+
+        $(document).keypress(function (event) {
+
+            var Evekey = event.keyCode;
+            // console.log(temp_numID);
+            if ($("#num_row").css("pointer-events") != "none") {
+                for (let i = 0; i < numid_fokey.length; i++) {
+                    if (Evekey == Number(temp_numID[i]) + 48) {
+                        btnSound.play();
+                        $("#num_row").css("pointer-events", "none");
+                        $("#oper_row").css("pointer-events", "auto");
+                        $("#" + numid_fokey[i]).attr("disabled", true);
+                        $("#" + numid_fokey[i]).css({
+                            "background-color": "gray",
+                            "border": "3px solid gray"
+                        });
+                        if (op == undefined) {
+                            total += (Evekey - 48);
+                            $("#screen").text(total);
+                        } else {
+                            switch (op) {
+                                case "plus":
+                                    total = total + (Evekey - 48);
+                                    break;
+                                case "minu":
+                                    total = total - (Evekey - 48);
+                                    break;
+                                case "mult":
+                                    total = total * (Evekey - 48);
+                                    break;
+                                default:
+                                    total = total + (Evekey - 48);
+                                    break;
+                            }
+                        }
+                        $("#screen").text(total);
+                        if (total == answer) {
+                            level++;
+                            $("#level").text("LEVEL:" + level);
+                            nextLev();
+                        }
+                        temp_numID[i] = "";
+                        break;
+                    }
+                }
+            } else if ($("#num_row").css("pointer-events") == "none") {
+                for (let i = 0; i < opid_fokey.length; i++) {
+                    if (Evekey == 45 && temp_operID[i] == "minu") { //-
+                        op = temp_operID[i];
+                        temp_operID[i] = "";
+                        btnSound.play();
+                        $("#num_row").css("pointer-events", "auto");
+                        $("#oper_row").css("pointer-events", "none");
+                        $("#" + opid_fokey[i]).attr("disabled", true);
+                        $("#" + opid_fokey[i]).css({
+                            "background-color": "gray",
+                            "border": "3px solid gray"
+                        });
+                        break;
+                    } else if (Evekey == 42 && temp_operID[i] == "mult") { //* shift+8的keycode是42  
+                        btnSound.play();
+                        op = temp_operID[i];
+                        temp_operID[i] = "";
+                        $("#num_row").css("pointer-events", "auto");
+                        $("#oper_row").css("pointer-events", "none");
+                        $(`#${opid_fokey[i]}`).attr("disabled", true);
+                        $(`#${opid_fokey[i]}`).css({
+                            "background-color": "gray",
+                            "border": "3px solid gray"
+                        });
+                        break;
+                    } else if (Evekey == 43 && temp_operID[i] == "plus") { //+ shift+=的keycode是43
+                        btnSound.play();
+                        op = temp_operID[i];
+                        temp_operID[i] = "";
+                        $("#num_row").css("pointer-events", "auto");
+                        $("#oper_row").css("pointer-events", "none");
+                        $(`#${opid_fokey[i]}`).attr("disabled", true);
+                        $(`#${opid_fokey[i]}`).css({
+                            "background-color": "gray",
+                            "border": "3px solid gray"
+                        });
+                        break;
+                    }
+                }
+                // console.log(temp_operID);
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
