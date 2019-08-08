@@ -83,15 +83,15 @@
         var hint_answer = []
         //==================系統亂術產生數字及運算符號==================
 
-        window.onload = function () {
-            $(function () {
-                $("#nextlevel").hide();
-                $("#gamestart").click(function () {
-                    $(this).hide();
-                    gameStart();
-                });
+        // window.onload = function () {
+        $(function () {
+            $("#nextlevel").hide();
+            $("#gamestart").click(function () {
+                $(this).hide();
+                gameStart();
             });
-        }
+        });
+        // }
 
         function gameStart() {
             numid_fokey = [];
@@ -251,9 +251,9 @@
         function opClick(str) {
             $("#oper_row").css({
                 "pointer-events": "none",
-                //NOTE:待增加功能:顏色變淡
             });
             $("#num_row").css("pointer-events", "auto");
+
             btnSound.play();
             op = str.substr(0, 4);
             for (let i = 0; i < opid_fokey.length; i++) {
@@ -272,7 +272,6 @@
         }
 
         function reset() {
-
             // clearSound.play();
             total = 0;
             op = "";
@@ -324,21 +323,21 @@
             if (hint_count > 0) {
                 hint_count--;
                 $("#hint").text("HINT : " + hint_count);
-                for (let i = 0; i < hint_answer.length - 1; i++) {
+                for (let i = 1; i < hint_answer.length; i++) {
                     hint_time = setTimeout(function () {
-                        $(`#${hint_answer[i]}`).css({
+                        $(`#${hint_answer[i-1]}`).css({
                             "border": "3px ridge #FFFF33",
                             "box-shadow": "4px 4px 12px 4px #FFFF33"
                         });
                         // console.log(hint_answer[i]);
                     }, 500 * (i + 1));
                     hint_time = setTimeout(function () {
-                        $(`#${hint_answer[i]}`).css({
+                        $(`#${hint_answer[i-1]}`).css({
                             "border": "3px solid #D4A509",
                             "box-shadow": "none"
                         });
                         // console.log(hint_answer[i]);
-                    }, 600 * (i + 1));
+                    }, 700 * (i + 1));
                 }
                 reset();
             } else {
@@ -348,10 +347,8 @@
 
         // $("#" + numid_fokey[i]).css("background-color", "gray");
 
-
-
         function nextLev() {
-            if (level == 3) {
+            if (level == 5) {
                 j++;
                 // } else if (level == 5) {
                 //     j++;
@@ -370,7 +367,18 @@
         $(document).keypress(function (event) {
 
             var Evekey = event.keyCode;
-            // console.log(temp_numID);
+            if ($("#nextlevel").is(':visible') == true) { //space bar:32 , enter:13
+                if (Evekey == 13 || Evekey == 32) {
+                    $("#nextlevel").hide();
+                    bingoSound.play();
+                    $("#oper_row").empty();
+                    $("#num_row").empty();
+                    total = 0;
+                    answer = 0;
+                    op = "";
+                    gameStart();
+                }
+            }
             if ($("#num_row").css("pointer-events") != "none") {
                 for (let i = 0; i < numid_fokey.length; i++) {
                     if (Evekey == Number(temp_numID[i]) + 48) {
