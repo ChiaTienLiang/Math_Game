@@ -84,7 +84,6 @@
         //==================系統亂術產生數字及運算符號==================
 
         window.onload = function () {
-
             $(function () {
                 $("#nextlevel").hide();
                 $("#gamestart").click(function () {
@@ -103,6 +102,7 @@
             var oper = ["plus", "minu", "mult"];
             var ran_oper = [];
             var a = 0;
+            $("#hint").text("HINT : " + hint_count);
             $("#equal").text("=");
             $("#oper_row").css("pointer-events", "none");
             $("#num_row").css("pointer-events", "auto");
@@ -323,7 +323,7 @@
         $("#hint").click(function () {
             if (hint_count > 0) {
                 hint_count--;
-
+                $("#hint").text("HINT : " + hint_count);
                 for (let i = 0; i < hint_answer.length - 1; i++) {
                     hint_time = setTimeout(function () {
                         $(`#${hint_answer[i]}`).css({
@@ -339,7 +339,6 @@
                         });
                         // console.log(hint_answer[i]);
                     }, 600 * (i + 1));
-
                 }
                 reset();
             } else {
