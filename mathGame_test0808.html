@@ -79,6 +79,7 @@
         var opid_fokey = []; //存放ID用 (符號)
         var temp_operID = [];
         var hint_time;
+        var hint_count = 3;
         var hint_answer = []
         //==================系統亂術產生數字及運算符號==================
 
@@ -271,11 +272,12 @@
         }
 
         function reset() {
-            clearSound.play();
+
+            // clearSound.play();
             total = 0;
             op = "";
-            console.log(numid_fokey);
-            console.log(opid_fokey);
+            // console.log(numid_fokey);
+            // console.log(opid_fokey);
             for (let i = 0; i < numid_fokey.length; i++) {
                 temp_numID[i] = numid_fokey[i].substr(0, 1);
             }
@@ -289,7 +291,8 @@
                 $(this).css({ //按鈕樣式恢復
                     "background-color": "#0b0b0b",
                     "color": "#ffc400",
-                    "border": "3px solid #D4A509"
+                    "border": "3px solid #D4A509",
+                    "box-shadow": "none"
                 });
             });
             $("#num_row").css("pointer-events", "auto");
@@ -318,14 +321,30 @@
         });
 
         $("#hint").click(function () {
-            var albutol = opid_fokey.length + numid_fokey.length;
-            for (let i = 0; i < hint_answer.length - 1; i++) {
-                hint_time = setTimeout(function () {
-                    $(`#${hint_answer[i]}`).css("background-color", "pink");
-                    console.log(hint_answer[i]);
-                }, 500 * i);
+            if (hint_count > 0) {
+                hint_count--;
+
+                for (let i = 0; i < hint_answer.length - 1; i++) {
+                    hint_time = setTimeout(function () {
+                        $(`#${hint_answer[i]}`).css({
+                            "border": "3px ridge #FFFF33",
+                            "box-shadow": "4px 4px 12px 4px #FFFF33"
+                        });
+                        // console.log(hint_answer[i]);
+                    }, 500 * (i + 1));
+                    hint_time = setTimeout(function () {
+                        $(`#${hint_answer[i]}`).css({
+                            "border": "3px solid #D4A509",
+                            "box-shadow": "none"
+                        });
+                        // console.log(hint_answer[i]);
+                    }, 600 * (i + 1));
+
+                }
+                reset();
+            } else {
+                alert("提示次數已用盡!");
             }
-            reset();
         });
 
         // $("#" + numid_fokey[i]).css("background-color", "gray");
@@ -339,6 +358,7 @@
                 //     j++;
             } else if (level % 10 == 0) {
                 j++;
+                hint_time++;
             };
             $("#nextlevel").show();
             $("#equal").text("");
