@@ -81,6 +81,7 @@
         var hint_time;
         var hint_count = 3;
         var hint_answer = []
+        var nul_temp = [];
         //==================系統亂術產生數字及運算符號==================
 
         // window.onload = function () {
@@ -147,7 +148,10 @@
             shuffle(opid_fokey);
             for (let i = 0; i < numid_fokey.length; i++) {
                 temp_numID[i] = numid_fokey[i].substr(0, 1);
+
             }
+            nul_temp = temp_numID;
+
             for (let i = 0; i < opid_fokey.length; i++) {
                 temp_operID[i] = opid_fokey[i].substr(0, 4);
             }
@@ -200,15 +204,17 @@
             $("#oper_row").css("pointer-events", "auto");
             // numbutId[i] = "";
             // console.log(numbutId);
-            // console.log(num);
+
+            var num2 = num.substr(0, 1);
             for (let i = 0; i < numid_fokey.length; i++) {
                 // console.log(numbutId[i].substr(3, 1));
-                if (temp_numID[i] == num) {
+                if (temp_numID[i] == num2) {
                     // console.log(numbutId[i]);
                     temp_numID[i] = "";
                     break;
                 }
             }
+
             btnSound.play();
             document.getElementById("screen").value = "";
             // var temp_num = document.getElementById(num);
@@ -240,12 +246,23 @@
                 }
             }
 
+
             $("#screen").text(total);
             if (total == answer) {
-                bingoSound.play();
-                level++;
-                $("#level").text("LEVEL:" + level);
-                nextLev();
+
+                for (let i = nul_temp.length; i >= 0; i--) {
+                    if (nul_temp[i] == "") {
+                        nul_temp.splice(i, 1);
+                    }
+                }
+
+                if (nul_temp.length == 0) {
+                    bingoSound.play();
+                    level++;
+                    $("#level").text("LEVEL:" + level);
+                    nextLev();
+
+                }
             }
         };
 
@@ -277,7 +294,7 @@
             total = 0;
             op = "";
             // console.log(numid_fokey);
-            // console.log(opid_fokey);
+            nul_temp = temp_numID;
             for (let i = 0; i < numid_fokey.length; i++) {
                 temp_numID[i] = numid_fokey[i].substr(0, 1);
             }
@@ -311,7 +328,7 @@
         }
         $("#nextlevel").click(function () {
             $(this).hide();
-            
+
             $("#oper_row").empty();
             $("#num_row").empty();
             total = 0;
@@ -410,13 +427,22 @@
                                     break;
                             }
                         }
+                        nul_temp[i] = "";
                         $("#screen").text(total);
                         if (total == answer) {
-                            level++;
-                            $("#level").text("LEVEL:" + level);
-                            nextLev();
+                            for (let i = nul_temp.length; i >= 0; i--) {
+                                if (nul_temp[i] == "") {
+                                    nul_temp.splice(i, 1);
+                                }
+                            }
+                            if (nul_temp.length == 0) {
+                                bingoSound.play();
+                                level++;
+                                $("#level").text("LEVEL:" + level);
+                                nextLev();
+                            }
                         }
-                        temp_numID[i] = "";
+
                         break;
                     }
                 }
